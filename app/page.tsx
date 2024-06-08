@@ -1,95 +1,71 @@
-import Image from "next/image";
+'use client'
+import { useState } from "react";
 import styles from "./page.module.css";
 
 export default function Home() {
-  return (
+
+  const [result, setResult] = useState('');
+  var numberButtons: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+  var operatorButtons: string[] = ['+', '-', '*', '/', '=', 'C'];
+  //shuffling the numbers
+  function shuffle(numberArray : any[]) {
+    let currentIndex = numberArray.length;
+    while (currentIndex != 0) {
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [numberArray[currentIndex], numberArray[randomIndex]] = [
+        numberArray[randomIndex], numberArray[currentIndex]];
+      }
+    return numberArray;
+  }
+  const handleClick = (value: any) => {
+    playSound();
+    if (value === '=') {
+        try {
+            setResult(eval(result) || '');
+        } catch (error) {
+            setResult('Error');
+        }
+    } else if (value === 'C') {
+        setResult('');
+    } else if (value === 'CE') {
+        setResult(result.slice(0, -1));
+    } else {
+        setResult(result + value);
+    }
+  }
+  numberButtons = shuffle(numberButtons);
+  operatorButtons = shuffle(operatorButtons);
+  function playSound() {
+    new Audio("/sounds/click.mp3").play()
+  }
+
+  return (  
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+      <div className="calc">
+      <input type="text" className={styles.resultBox} value={result}/>
+      <div className={styles.numberButtonsContainer}>       
+        {numberButtons.map((number) => (
+          <button className={styles.numberButton} key={number} onClick={() => handleClick(number)}>
+            {number}
+          </button>       
+        ))}
+        {operatorButtons.map((operator) => (
+          <button className={styles.operatorButton} key={operator} onClick={() => handleClick(operator)}>
+            {operator}
+          </button>
+        ))}       
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+     <div className={styles.message}>
+      Just a <span className={styles.specialText}>normal</span> calculator.
+     </div>
       </div>
+      <footer className={styles.footer}>
+        <hr></hr>
+        Made with <a href="https://nextjs.org/" target="_blank" rel="noopener noreferrer">Next.js{"         "}      </a> 
+        <span className={styles.footerRight}><a href="https://github.com/minoritydev" target="_blank" rel="noopener noreferrer">&lt;GitHub/&gt;</a></span>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      </footer>
     </main>
   );
 }
